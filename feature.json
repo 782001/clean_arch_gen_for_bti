@@ -1,8 +1,8 @@
 {
-  "feature": "remove_from_wishlist",
-  "layer_path": "app_features/wishlist",
+  "feature": "login",
+  "layer_path": "app_features/auth",
   "response": {
-    "entity": "RemoveFromWishlistResponseEntity",
+    "entity": "LoginResponseEntity",
     "fields": {
       "success": "bool",
       "message": "String",
@@ -11,8 +11,8 @@
   },
 
   "endpoint": {
-    "url": "searchForProductByCategoryIdEndPoint",
-    "method": "get",
+    "url": "loginEndpoint",
+    "method": "post",
     "auth": "bearer"
    
   },

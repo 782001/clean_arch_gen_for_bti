@@ -1,10 +1,10 @@
 
 class {{Feature}}ResponseModel extends {{entity}} {
-  {{Feature}}ResponseModel({super.message});
+  {{Feature}}ResponseModel();
 
-  factory {{Feature}}Model.fromJson(Map<String, dynamic> json) {
-    return {{Feature}}Model(
-      message: json['message'],
+  factory {{Feature}}ResponseModel.fromJson(Map<String, dynamic> json) {
+    return {{Feature}}ResponseModel(
+    
     );
   }
 }

@@ -1,9 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:pharmacy/core/utils/app_strings.dart';
 import 'package:flutter/foundation.dart';
-import 'endpoints.dart';
 import 'package:flutter/foundation.dart';
-import 'package:pharmacy/config/services/injection_container.dart';
 
 abstract class {{Feature}}BaseRemoteDataSource {
   Future<{{Feature}}ResponseModel> {{Feature}}({

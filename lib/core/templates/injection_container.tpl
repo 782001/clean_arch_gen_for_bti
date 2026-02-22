@@ -13,5 +13,5 @@ sl.registerLazySingleton<{{Feature}}BaseRepository>(
 );
   /// --------DataSource--------
 sl.registerLazySingleton<{{Feature}}BaseRemoteDataSource>(
-  () => {{Feature}}RemoteDataSource(),
+  () => {{Feature}}RemoteDataSource(sl<DioClient>()),
 );

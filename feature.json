@@ -1,0 +1,39 @@
+{
+  "feature": "remove_from_wishlist",
+  "layer_path": "app_features/wishlist",
+  "response": {
+    "entity": "RemoveFromWishlistResponseEntity",
+    "fields": {
+      "success": "bool",
+      "message": "String",
+      "data": "CartEntity"
+    }
+  },
+
+  "endpoint": {
+    "url": "searchForProductByCategoryIdEndPoint",
+    "method": "get",
+    "auth": "bearer"
+   
+  },
+
+  "request": {
+    "path_params": {},
+    "query": {
+        "q": "String",
+        "categoryId": "String"},
+"body": {
+  "productId": "String",
+  "rating": "int",
+  "title": "String",
+  "body": "String"
+}
+
+
+  },
+
+
+  "presentation": {
+    "cubit": true
+  }
+}

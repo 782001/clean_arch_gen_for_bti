@@ -1,0 +1,27 @@
+{
+  "roots": [
+    "clean_arch_gen"
+  ],
+  "packages": [
+    {
+      "name": "clean_arch_gen",
+      "version": "1.0.0",
+      "dependencies": [
+        "args",
+        "path"
+      ],
+      "devDependencies": []
+    },
+    {
+      "name": "path",
+      "version": "1.9.1",
+      "dependencies": []
+    },
+    {
+      "name": "args",
+      "version": "2.7.0",
+      "dependencies": []
+    }
+  ],
+  "configVersion": 1
+}

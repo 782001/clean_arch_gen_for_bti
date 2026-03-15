@@ -1,6 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../../domain/entities/{{feature}}_entity.dart';
+import '../../../domain/usecases/{{feature}}_usecase.dart';
+import '{{module}}_states.dart';
+
 class {{Module}}Cubit extends Cubit<{{Module}}State> {
   final {{Feature}}UseCase k{{Feature}}UseCase;
 

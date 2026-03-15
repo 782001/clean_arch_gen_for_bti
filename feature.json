@@ -1,8 +1,9 @@
 {
-  "feature": "product",
-  "layer_path": "app_features/products",
+  "feature": "login",
+  "base_path": "F:\\myApps\\standred_repo\\lib\\features",
+  "layer_path": "auth",
   "response": {
-    "entity": "ProductResponseEntity",
+    "entity": "LoginResponseEntity",
     "data": {
       "success": true,
       "message": "Related products fetched successfully",
@@ -40,18 +41,22 @@
   },
 
   "endpoint": {
-    "url": "productEndpoint",
-    "method": "get"
+    "url": "loginEndpoint",
+    "method": "post"
   },
 
   "request": {
     "path_params": {},
-    "query": {},
+    "query": {
+      "email":"String",
+      "password":"String"
+    },
     "body": {}
   },
 
   "presentation": {
     "cubit": true,
-    "injection_container": true
+    "injection_container": true,
+    "injection_container_path": "F:\\myApps\\standred_repo\\lib\\core\\services\\injection_container.dart"
   }
 }

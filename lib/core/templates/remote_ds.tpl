@@ -1,5 +1,7 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import '../../../../core/dio_client/dio_client.dart';
+import '../../../../core/dio_client/endpoints.dart';
+import '../../domain/usecases/{{feature}}_usecase.dart';
+import '../models/{{feature}}_model.dart';
 
 abstract class {{Feature}}BaseRemoteDataSource {
   Future<{{model}}> {{Feature}}({

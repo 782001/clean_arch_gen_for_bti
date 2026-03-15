@@ -1,13 +1,15 @@
 class FeatureSchema {
   final String feature;
+  final String? basePath;
   final String layerPath;
   final EndpointSchema endpoint;
   final ResponseSchema response;
   final PresentationSchema presentation;
-final RequestSchema request;
+  final RequestSchema request;
 
-  FeatureSchema( {
+  FeatureSchema({
     required this.feature,
+    this.basePath,
     required this.layerPath,
     required this.endpoint,
     required this.response,
@@ -18,6 +20,7 @@ final RequestSchema request;
   factory FeatureSchema.fromJson(Map<String, dynamic> json) {
     return FeatureSchema(
       feature: json['feature'],
+      basePath: json['base_path'],
       layerPath: json['layer_path'],
       endpoint: EndpointSchema.fromJson(json['endpoint']),
       response: ResponseSchema.fromJson(json['response']),
@@ -58,12 +61,18 @@ class ResponseSchema {
 class PresentationSchema {
   final bool cubit;
   final bool injectionContainer;
-  PresentationSchema({required this.cubit, required this.injectionContainer});
+  final String? injectionContainerPath;
+  PresentationSchema({
+    required this.cubit,
+    required this.injectionContainer,
+    this.injectionContainerPath,
+  });
 
   factory PresentationSchema.fromJson(Map<String, dynamic> json) {
     return PresentationSchema(
       cubit: json['cubit'] ?? false,
       injectionContainer: json['injection_container'] ?? false,
+      injectionContainerPath: json['injection_container_path'],
     );
   }
 }

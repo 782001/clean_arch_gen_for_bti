@@ -35,21 +35,30 @@ import '../lib/core/engine/placeholder_resolver.dart';
 import '../lib/core/writer/file_writer.dart';
 
 void main(List<String> args) {
-  if (args.isEmpty) {
-    print('Usage: dart run clean_arch_gen generate feature.json');
+  if (args.length < 2) {
+    print('Usage: dart run bin/clean_arch_gen.dart generate feature.json [optional/output/path]');
     exit(1);
   }
 
-  final file = File(args.last);
-  final jsonMap = jsonDecode(file.readAsStringSync());
+  // Assuming args[0] = 'generate', args[1] = 'feature.json', args[2] = 'optional/output/path'
+  final file = File(args[1]);
+  if (!file.existsSync()) {
+    print('❌ Error: The file ${args[1]} does not exist.');
+    exit(1);
+  }
 
+  final String? cliOutputPath = args.length > 2 ? args[2] : null;
+
+  final jsonMap = jsonDecode(file.readAsStringSync());
   final schema = FeatureSchema.fromJson(jsonMap);
+
+  final String? customOutputPath = cliOutputPath ?? schema.basePath;
 
   FeatureGenerator(
     schema,
-    FileWriter(),
+    FileWriter(customOutputPath),
     PlaceholderResolver(),
   ).generate();
 
-  print('✅ Feature generated successfully');
+  print('✅ Feature generated successfully!');
 }

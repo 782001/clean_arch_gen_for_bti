@@ -15,6 +15,7 @@ To automate the repetitive parts of my Flutter development. It specifically:
 1.  **Parses APIs my way:** Handles recursive JSON to generate Models/Entities according to my Clean Architecture standards.
 2.  **Integrates into my DI:** Injects code directly into my `injection_container.dart` where I've placed the `//! Features` marker.
 3.  **Matches my templates:** Uses `.tpl` files that contain the exact boilerplate I prefer.
+4.  **Cubit Integration:** Automatically generates the ready-to-use endpoint method directly inside the Cubit.
 
 ### 🛠 How I run it:
 ```bash
@@ -69,6 +70,7 @@ dart run clean_arch_gen.dart generate feature.json
 1.  **بتقرأ الـ API بطريقتي:** بتطلع الـ Models والـ Entities أوتوماتيك من أي JSON معقد.
 2.  **بتحقن الـ Dependencies عندي:** بتدخل الكود الجديد في ملف الـ `injection_container.dart` بتاعي بالظبط تحت سطر الـ `//! Features`.
 3.  **ماشية على الـ Templates بتاعتي:** بتستخدم ملفات الـ `.tpl` اللي فيها شكل الكود اللي أنا بحبه.
+4.  **تكامل مع الـ Cubit:** بيبني لك الـ Method اللي بينادي الـ API جوه الـ Cubit أوتوماتيك وبيكون جاهز للاستخدام فوراً.
 
 ### 🛠 بشغله إزاي؟
 ```bash

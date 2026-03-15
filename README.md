@@ -36,6 +36,18 @@ dart run clean_arch_gen.dart generate feature.json
       "user": { "id": 1, "name": "John" }
     }
   },
+  "endpoint": {
+    "url": "loginEndpoint", //endpoint name 
+    "method": "post" //post or get or any other method
+  },
+  "request": {
+    "path_params": {}, //path parameters
+    "query": {
+      "email": "String",//pass  parameter name and type
+      "password": "String"//query parameters for passing data to the endpoint
+    },
+    "body": {} //body parameters for passing data to the endpoint
+  },
   "presentation": {
     "cubit": true, //true or false
     "injection_container": true, //true or false
@@ -76,6 +88,18 @@ dart run clean_arch_gen.dart generate feature.json
       "success": true,
       "data": { "token": "..." }
     }
+  },
+  "endpoint": {
+    "url": "loginEndpoint", //endpoint name 
+    "method": "post" //post or get or any other method
+  },
+  "request": {
+    "path_params": {}, //path parameters
+    "query": {
+      "email": "String",//pass  parameter name and type
+      "password": "String"//query parameters for passing data to the endpoint
+    },
+    "body": {} //body parameters for passing data to the endpoint
   },
   "presentation": {
     "cubit": true, //true or false

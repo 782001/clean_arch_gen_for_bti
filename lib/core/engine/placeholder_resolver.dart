@@ -4,7 +4,18 @@ import 'json_complex_parser.dart';
 
 class PlaceholderResolver {
   String _pascal(String v) =>
-      v.split('_').map((e) => e[0].toUpperCase() + e.substring(1)).join();
+      v.split(RegExp(r'[_|\-| ]')).map((e) {
+        if (e.isEmpty) return '';
+        return e[0].toUpperCase() + e.substring(1);
+      }).join();
+
+  String _snake(String v) {
+    return v
+        .replaceAllMapped(RegExp(r'([a-z0-9])([A-Z])'), (Match m) => '${m[1]}_${m[2]}')
+        .replaceAll(RegExp(r'\s+|-'), '_')
+        .toLowerCase();
+  }
+
   String moduleNameFromPath(String path) {
     // app_features/categories → categories
     return path.split('/').last;
@@ -43,7 +54,7 @@ class PlaceholderResolver {
     var t = File('lib/core/templates/$template').readAsStringSync();
 
     t = t.replaceAll('{{Feature}}', _pascal(s.feature));
-    t = t.replaceAll('{{feature}}', s.feature);
+    t = t.replaceAll('{{feature}}', _snake(s.feature));
     t = t.replaceAll('{{entity}}', s.response.entity);
     t = t.replaceAll(
         '{{model}}', s.response.entity.replaceAll('Entity', '') + 'Model');
@@ -87,18 +98,17 @@ class PlaceholderResolver {
     final module = moduleNameFromPath(s.layerPath);
 
     if (tpl == 'cubit.tpl' || tpl == 'states.tpl') {
-      return '${module}_${tpl.replaceAll('.tpl', '')}.dart';
+      return '${_snake(module)}_${tpl.replaceAll('.tpl', '')}.dart';
     }
     if (tpl == 'injection_container.tpl') {
       return '${tpl.replaceAll('.tpl', '')}.dart';
     }
 
-    return '${s.feature}_${tpl.replaceAll('.tpl', '')}.dart';
+    return '${_snake(s.feature)}_${tpl.replaceAll('.tpl', '')}.dart';
   }
 
   String _camel(String v) {
-    final p =
-        v.split('_').map((e) => e[0].toUpperCase() + e.substring(1)).join();
+    final p = _pascal(v);
     return p[0].toLowerCase() + p.substring(1);
   }
 

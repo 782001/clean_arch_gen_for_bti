@@ -1,9 +1,9 @@
 {
-  "feature": "login",
-  "base_path": "F:\\myApps\\standred_repo\\lib\\features",
-  "layer_path": "auth",
+ "base_path": "F:\\myApps\\standred_repo\\lib\\features",
+ "feature": "getProduct",
+ "layer_path": "product",
   "response": {
-    "entity": "LoginResponseEntity",
+    "entity": "GetProductResponseEntity",
     "data": {
       "success": true,
       "message": "Related products fetched successfully",
@@ -41,15 +41,14 @@
   },
 
   "endpoint": {
-    "url": "loginEndpoint",
-    "method": "post"
+    "url": "getProductEndpoint",
+    "method": "get"
   },
 
   "request": {
     "path_params": {},
     "query": {
-      "email":"String",
-      "password":"String"
+      "productId":"String"
     },
     "body": {}
   },

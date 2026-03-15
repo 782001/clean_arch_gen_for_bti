@@ -18,7 +18,7 @@ class PlaceholderResolver {
   String buildBodyMap(FeatureSchema s) => s.request.body.entries
       .map((e) => "'${e.key}': parameters.${e.key}")
       .join(',\n        ');
-      
+
   String buildDataBodyField(FeatureSchema s) {
     if (s.request.body.isEmpty) return '';
     return '      data: {\n        ${buildBodyMap(s)}\n      },';
@@ -32,6 +32,7 @@ class PlaceholderResolver {
     if (s.request.query.isEmpty) return '';
     return '      queryParameters: {\n        ${buildQueryParameters(s)}\n      },';
   }
+
   String buildCubitParameters(FeatureSchema s) =>
       _allParams(s).map((e) => 'required ${e.value} ${e.key},').join('\n    ');
 
@@ -44,7 +45,8 @@ class PlaceholderResolver {
     t = t.replaceAll('{{Feature}}', _pascal(s.feature));
     t = t.replaceAll('{{feature}}', s.feature);
     t = t.replaceAll('{{entity}}', s.response.entity);
-    t = t.replaceAll('{{model}}', s.response.entity.replaceAll('Entity', '') + 'Model');
+    t = t.replaceAll(
+        '{{model}}', s.response.entity.replaceAll('Entity', '') + 'Model');
     t = t
         .replaceAll('{{cubitParameters}}', buildCubitParameters(s))
         .replaceAll('{{usecaseParams}}', buildUsecaseParams(s));
@@ -84,10 +86,11 @@ class PlaceholderResolver {
   String fileName(String tpl, FeatureSchema s) {
     final module = moduleNameFromPath(s.layerPath);
 
-    if (tpl == 'cubit.tpl' ||
-        tpl == 'states.tpl' ||
-        tpl == 'injection_container.tpl') {
+    if (tpl == 'cubit.tpl' || tpl == 'states.tpl') {
       return '${module}_${tpl.replaceAll('.tpl', '')}.dart';
+    }
+    if (tpl == 'injection_container.tpl') {
+      return '${tpl.replaceAll('.tpl', '')}.dart';
     }
 
     return '${s.feature}_${tpl.replaceAll('.tpl', '')}.dart';

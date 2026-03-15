@@ -22,6 +22,9 @@ class FeatureGenerator {
     if (schema.presentation.cubit) {
       _gen('cubit.tpl', 'presentation/controller/${module}_cubit');
       _gen('states.tpl', 'presentation/controller/${module}_cubit');
+    }
+
+    if (schema.presentation.injectionContainer) {
       _gen(
         'injection_container.tpl',
         'presentation/controller/${module}_cubit',

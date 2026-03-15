@@ -57,10 +57,14 @@ class ResponseSchema {
 
 class PresentationSchema {
   final bool cubit;
-  PresentationSchema({required this.cubit});
+  final bool injectionContainer;
+  PresentationSchema({required this.cubit, required this.injectionContainer});
 
   factory PresentationSchema.fromJson(Map<String, dynamic> json) {
-    return PresentationSchema(cubit: json['cubit'] ?? false);
+    return PresentationSchema(
+      cubit: json['cubit'] ?? false,
+      injectionContainer: json['injection_container'] ?? false,
+    );
   }
 }
 class RequestSchema {

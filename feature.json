@@ -1,43 +1,47 @@
 {
   "feature": "product",
   "layer_path": "app_features/products",
-  "response":{
-    "success": true,
-    "message": "Categories fetched successfully",
+  "response": {
+    "entity": "ProductResponseEntity",
     "data": {
-        "categories": [
-            {
-                "_id": "696202190ed9071f091f61b7",
-                "name": "Medical Equipment",
-                "slug": "medical-equipment",
-                "shortDescription": "Medical Equipment product",
-                "imageUrl": "https://res.cloudinary.com/dxhbkvt39/image/upload/v1768030745/pharmazool/categories/ywikg2ojdrhje3vlcyru.jpg",
-                "isActive": true,
-                "isDeleted": false,
-                "createdAt": "2026-01-10T07:39:05.569Z",
-                "updatedAt": "2026-01-10T07:39:05.569Z",
-                "__v": 0
-            },
-            {
-                "_id": "6961eb1d0ed9071f091f61a8",
-                "name": "Skin Care",
-                "slug": "skin-care",
-                "shortDescription": "Screen Care product",
-                "imageUrl": "https://res.cloudinary.com/dxhbkvt39/image/upload/v1768024862/pharmazool/categories/vbmadqx64oxc9myio1xa.jpg",
-                "isActive": true,
-                "isDeleted": false,
-                "createdAt": "2026-01-10T06:01:01.713Z",
-                "updatedAt": "2026-01-10T06:01:01.713Z",
-                "__v": 0
-            }
-        ]
+      "success": true,
+      "message": "Related products fetched successfully",
+      "data": {
+          "products": [
+              {
+                  "id": "696202fa0ed9071f091f61ba",
+                  "category": {
+                      "id": "696202190ed9071f091f61b7",
+                      "name": "Medical Equipment",
+                      "slug": "medical-equipment"
+                  },
+                  "name": "Digital Blood Pressure Monitor",
+                  "slug": "digital-blood-pressure-monitor",
+                  "images": [
+                      "https://res.cloudinary.com/example.jpg"
+                  ],
+                  "price": 79.99,
+                  "discountPrice": 64.99,
+                  "stock": 120,
+                  "shortDescription": "Automatic upper-arm blood pressure monitor",
+                  "description": "Clinically accurate digital monitor",
+                  "featured": true,
+                  "discountTag": "18%",
+                  "reviewsCount": 0,
+                  "avgRating": 0,
+                  "isActive": true,
+                  "isDeleted": false,
+                  "createdAt": "2026-01-10T07:42:50.363Z",
+                  "updatedAt": "2026-01-10T07:42:50.363Z"
+              }
+          ]
+      }
     }
-},
+  },
 
   "endpoint": {
     "url": "productEndpoint",
-    "method": "get",
-    "auth": "bearer"
+    "method": "get"
   },
 
   "request": {
@@ -47,6 +51,7 @@
   },
 
   "presentation": {
-    "cubit": true
+    "cubit": true,
+    "injection_container": true
   }
 }

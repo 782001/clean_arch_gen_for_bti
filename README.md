@@ -1,37 +1,28 @@
-# 🚀 Clean Architecture Generator (clean_arch_gen)
+# 🛠️ My Personal Clean Architecture Generator (Internal Tool)
 
-**Bilingual Documentation: [English](#english) | [العربية (مصري)](#arabic-egyptian)**
+**English ([English](#english)) | العربية ([بالبلدي](#arabic))**
 
 ---
 
 <a name="english"></a>
+## 🌏 English - Author's Note & Usage Guide
 
-## 🌏 English - Professional Documentation
+> [!IMPORTANT]
+> **Internal Use Only:** This tool is custom-built specifically for my personal projects and architectural patterns. It is not intended for general distribution as it relies on my specific project structures (like the DI container markers).
 
-### Overview
+### 🚀 Why I built this?
+To automate the repetitive parts of my Flutter development. It specifically:
+1.  **Parses APIs my way:** Handles recursive JSON to generate Models/Entities according to my Clean Architecture standards.
+2.  **Integrates into my DI:** Injects code directly into my `injection_container.dart` where I've placed the `//! Features` marker.
+3.  **Matches my templates:** Uses `.tpl` files that contain the exact boilerplate I prefer.
 
-`clean_arch_gen` is a powerful CLI tool designed for Flutter developers to automate the creation of Clean Architecture layers. It doesn't just create folders; it parses complex, nested JSON responses to generate Entities and Models recursively, sets up UseCases, Repositories, and even integrates with your existing Dependency Injection container.
-
-### Key Features
-
-- **⚡ Rapid Generation:** Generate all boilerplate for a feature in seconds.
-- **🧠 Complex JSON Parser:** Recursively handles nested objects, lists, and dynamic types from any API response.
-- **💉 DI Integration:** Automatically injects new feature dependencies into your existing `injection_container.dart`.
-- **📂 Flexible Paths:** Support for custom `base_path` and `layer_path` to fit any project structure.
-- **🏗️ Clean Architecture Adherence:** Strictly follows Data, Domain, and Presentation layer separation.
-
-### Installation
-
-Activate the package globally or use it within your project:
-
+### 🛠 How I run it:
 ```bash
-dart pub global activate --source path .
-# Or run within project:
+# Running from the project root
 dart run clean_arch_gen.dart generate feature.json
 ```
 
-### Configuration (`feature.json`)
-
+### 📝 My `feature.json` Configuration:
 ```json
 {
   "feature": "login", //feature name
@@ -39,8 +30,8 @@ dart run clean_arch_gen.dart generate feature.json
   "layer_path": "auth", //layer under base_path
   "response": {
     "entity": "LoginResponseEntity", //entity name
+    //here put the Full response after "data":
     "data": {
-      //here put the Full response
       "token": "string",
       "user": { "id": 1, "name": "John" }
     }
@@ -55,40 +46,33 @@ dart run clean_arch_gen.dart generate feature.json
 
 ---
 
-<a name="arabic-egyptian"></a>
+<a name="arabic"></a>
+## 🇪🇬 بالعربي - بتاع مين وايه لزمته؟
 
-## 🇪🇬 العربية (بلهجة مصرية) - التوثيق الرسمي
+> [!IMPORTANT]
+> **استخدام شخصي فقط:** الأداة دي معمولة ليّ أنا ولوحدي عشان تمشي مع طريقة الكود اللي أنا بكتبها والـ Structure بتاع مشاريعي. مش معمولة للنشر العام لأنها بتعتمد على "علامات" معينة بحطها في ملفات الـ Injection بتاعتي.
 
-### يعني إيه `clean_arch_gen`؟
+### 🚀 أنا عملت الكود ده ليه؟
+عشان أوفر وقت في الحاجات اللي بتتعاد كل شوية في الـ Flutter. بالظبط بتعمل كدة:
+1.  **بتقرأ الـ API بطريقتي:** بتطلع الـ Models والـ Entities أوتوماتيك من أي JSON معقد.
+2.  **بتحقن الـ Dependencies عندي:** بتدخل الكود الجديد في ملف الـ `injection_container.dart` بتاعي بالظبط تحت سطر الـ `//! Features`.
+3.  **ماشية على الـ Templates بتاعتي:** بتستخدم ملفات الـ `.tpl` اللي فيها شكل الكود اللي أنا بحبه.
 
-دي أداة (CLI tool) معمولة مخصوص لمطورين Flutter عشان تخلصهم من وجع الدماغ بتاع كتابة الـ Boilerplate كل شوية. الأداة دي بتبني لك الـ Clean Architecture كاملة، مش بس فولدرات، لا دي كمان بتقرأ الـ API Response وتعملك الـ Models والـ Entities لوحدها مهما كانت معقدة.
-
-### المميزات اللي هتروق عليك:
-
-- **🚀 سرعة الصاروخ:** بتبني الفيتشر (Feature) كلها في ثانية.
-- **🧩 ذكاء اصطناعي في الـ Parsing:** مبيفرقش معاها الـ JSON كبير ولا صغير، متداخل (Nested) ولا فيه Lists، هتعملك الـ Classes صح.
-- **🔌 حقن التبعيات (Dependency Injection):** بتدخل الكود الجديد في ملف الـ `injection_container.dart` بتاعك أوتوماتيك تحت سطر `//! Features`.
-- **🗺️ حرية في المسارات:** تقدر تحدد لها الـ `base_path` اللي إنت عاوزه والـ `layer_path` كمان.
-
-### إزاي تشغلها يا بطل؟
-
-نزل التبعيات وشغلها من الـ Terminal عادي جداً:
-
+### 🛠 بشغله إزاي؟
 ```bash
 dart run clean_arch_gen.dart generate feature.json
 ```
 
-### شكل ملف الإعدادات (`feature.json`):
-
+### 📝 شكل ملف الـ `feature.json` اللي بستخدمه:
 ```json
 {
-  "feature": "login",
-  "base_path": "F:\\مشروعي\\lib\\features",
-  "layer_path": "auth",
+  "feature": "login", //feature name
+  "base_path": "F:\\myApps\\مشروعي\\lib\\features", //base project path
+  "layer_path": "auth", //layer under base_path
   "response": {
     "entity": "LoginResponseEntity", //entity name
+    //here put the Full response after "data":
     "data": {
-      //here put the Full response
       "success": true,
       "data": { "token": "..." }
     }
@@ -103,12 +87,6 @@ dart run clean_arch_gen.dart generate feature.json
 
 ---
 
-### 🛠️ Advanced Usage / استخدامات متقدمة
-
-- **Injection Container Injection:**
-  Ensure your `injection_container.dart` has a comment line like `//! Features` so the tool knows exactly where to put the new registrations.
-  تأكد إن ملف الـ `injection_container.dart` بتاعك فيه سطر الكومنت ده `//! Features` عشان الأداة تعرف تحط الكود الجديد فين بالظبط.
-
-- **Entity & Model Naming:**
-  The tool intelligently replaces "Entity" with "Model" for data layer classes.
-  الأداة بتعرف تفرق بين الـ Entity والـ Model وبتظبط الأسامي لوحدها في الـ Data Layer.
+### 📌 ملاحظات ليّ أنا (Personal Notes):
+- لما أغير في شكل الكود الأساسي، لازم أعدل ملفات الـ `.tpl` في فولدر الـ `templates`.
+- لازم دايماً أتأكد إن سطر `//! Features` موجود في ملف الـ DI عشان الـ Generator ميتلخبطش.

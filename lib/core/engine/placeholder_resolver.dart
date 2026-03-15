@@ -52,7 +52,11 @@ class PlaceholderResolver {
 
   String resolve(String template, FeatureSchema s) {
     var t = File('lib/core/templates/$template').readAsStringSync();
+    return resolveContent(t, s);
+  }
 
+  String resolveContent(String content, FeatureSchema s) {
+    var t = content;
     t = t.replaceAll('{{Feature}}', _pascal(s.feature));
     t = t.replaceAll('{{feature}}', _snake(s.feature));
     t = t.replaceAll('{{entity}}', s.response.entity);
@@ -132,4 +136,79 @@ class PlaceholderResolver {
         ...s.request.body.entries,
         ...s.request.query.entries,
       ];
+
+  String resolveSnippet(String snippetName, FeatureSchema s) {
+    final featurePascal = _pascal(s.feature);
+    final featureSnake = _snake(s.feature);
+    final featureCamel = _camel(s.feature);
+    final modulePascal = pascalFromPath(s.layerPath);
+
+    switch (snippetName) {
+      case 'cubitField':
+        return '  final ${featurePascal}UseCase k${featurePascal}UseCase;';
+      case 'cubitConstructorParam':
+        return '    required this.k${featurePascal}UseCase,';
+      case 'cubitImports':
+        return "import '../../../domain/entities/${featureSnake}_entity.dart';\nimport '../../../domain/usecases/${featureSnake}_usecase.dart';";
+      case 'cubitMethod':
+        final entity = s.response.entity;
+        final entityCamel = _camel(entity);
+        return '''
+  $entity? $entityCamel;
+  void ${featureCamel}Method({
+    ${buildCubitParameters(s)}
+  }) async {
+    emit(${featurePascal}LoadingState());
+
+    final response = await k${featurePascal}UseCase(
+      ${featurePascal}Parameters(
+        ${buildUsecaseParams(s)}
+      ),
+    );
+
+    response.fold(
+      (failure) {
+        debugPrint('Failure: ${featurePascal}ErrorState');
+        emit(${featurePascal}ErrorState());
+      },
+      (r) {
+        $entityCamel = r;
+        debugPrint('Success: \${r.message}');
+        emit(${featurePascal}SucssesState(message: r.message ?? ''));
+      },
+    );
+  }''';
+      case 'diCubitParam':
+        return '    k${featurePascal}UseCase: sl(),';
+      case 'diUseCase':
+        return '''sl.registerLazySingleton<${featurePascal}UseCase>(
+  () => ${featurePascal}UseCase(baseRepository: sl()),
+);''';
+      case 'diRepo':
+        return '''sl.registerLazySingleton<${featurePascal}BaseRepository>(
+  () => ${featurePascal}Repository(sl()),
+);''';
+      case 'diDS':
+        return '''sl.registerLazySingleton<${featurePascal}BaseRemoteDataSource>(
+  () => ${featurePascal}RemoteDataSource(sl<DioClient>()),
+);''';
+      case 'cubitStates':
+        return '''
+class ${featurePascal}LoadingState extends ${modulePascal}State {}
+
+class ${featurePascal}ErrorState extends ${modulePascal}State {
+  ${featurePascal}ErrorState();
+}
+
+class ${featurePascal}SucssesState extends ${modulePascal}State {
+  final String message;
+
+  ${featurePascal}SucssesState({
+    required this.message,
+  });
+}''';
+      default:
+        return '';
+    }
+  }
 }

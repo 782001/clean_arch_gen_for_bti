@@ -15,7 +15,7 @@ class {{Module}}Cubit extends Cubit<{{Module}}State> {
   static {{Module}}Cubit get(context) =>
       BlocProvider.of<{{Module}}Cubit>(context);
 {{entity}}? {{entityCamel}};
-  void {{featureCamel}}Mithode({
+  void {{featureCamel}}Method({
     {{cubitParameters}}
   }) async {
     emit({{Feature}}LoadingState());

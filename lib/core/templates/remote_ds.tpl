@@ -1,9 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/foundation.dart';
 
 abstract class {{Feature}}BaseRemoteDataSource {
-  Future<{{Feature}}ResponseModel> {{Feature}}({
+  Future<{{model}}> {{Feature}}({
     required {{Feature}}Parameters parameters,
   });
 }
@@ -15,7 +14,7 @@ class {{Feature}}RemoteDataSource
   final DioClient dio;
 {{Feature}}RemoteDataSource(this.dio);
   @override
-  Future<{{Feature}}ResponseModel> {{Feature}}({
+  Future<{{model}}> {{Feature}}({
     required {{Feature}}Parameters parameters,
   }) async {
   
@@ -23,14 +22,10 @@ class {{Feature}}RemoteDataSource
       Endpoint.{{endpoint}},
       //      "${Endpoint.{{endpoint}}}/${parameters.productId}",
 
-       queryParameters: {
-       {{queryParameters}}
-        },
-      data: {
-        {{dataBodyMap}}   
-           },
+{{queryParametersField}}
+{{dataBodyField}}
     );
-     return {{Feature}}ResponseModel.fromJson(response.data);  
+     return {{model}}.fromJson(response.data);  
    
 
  

@@ -7,4 +7,5 @@ environment:
 
 dependencies:
   args: ^2.5.0
+  dart_style: ^3.0.1
   path: ^1.9.0

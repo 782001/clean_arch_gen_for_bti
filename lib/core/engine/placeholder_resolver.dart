@@ -1,5 +1,6 @@
 import 'dart:io';
 import '../../schema/feature_schema.dart';
+import 'json_complex_parser.dart';
 
 class PlaceholderResolver {
   String _pascal(String v) =>
@@ -17,9 +18,20 @@ class PlaceholderResolver {
   String buildBodyMap(FeatureSchema s) => s.request.body.entries
       .map((e) => "'${e.key}': parameters.${e.key}")
       .join(',\n        ');
+      
+  String buildDataBodyField(FeatureSchema s) {
+    if (s.request.body.isEmpty) return '';
+    return '      data: {\n        ${buildBodyMap(s)}\n      },';
+  }
+
   String buildQueryParameters(FeatureSchema s) => s.request.query.entries
       .map((e) => "'${e.key}': parameters.${e.key}")
       .join(',\n        ');
+
+  String buildQueryParametersField(FeatureSchema s) {
+    if (s.request.query.isEmpty) return '';
+    return '      queryParameters: {\n        ${buildQueryParameters(s)}\n      },';
+  }
   String buildCubitParameters(FeatureSchema s) =>
       _allParams(s).map((e) => 'required ${e.value} ${e.key},').join('\n    ');
 
@@ -32,6 +44,7 @@ class PlaceholderResolver {
     t = t.replaceAll('{{Feature}}', _pascal(s.feature));
     t = t.replaceAll('{{feature}}', s.feature);
     t = t.replaceAll('{{entity}}', s.response.entity);
+    t = t.replaceAll('{{model}}', s.response.entity.replaceAll('Entity', '') + 'Model');
     t = t
         .replaceAll('{{cubitParameters}}', buildCubitParameters(s))
         .replaceAll('{{usecaseParams}}', buildUsecaseParams(s));
@@ -43,6 +56,8 @@ class PlaceholderResolver {
 
     t = t
         .replaceAll('{{endpoint}}', s.endpoint.url)
+        .replaceAll('{{dataBodyField}}', buildDataBodyField(s))
+        .replaceAll('{{queryParametersField}}', buildQueryParametersField(s))
         .replaceAll('{{dataBodyMap}}', buildBodyMap(s))
         .replaceAll('{{queryParameters}}', buildQueryParameters(s));
     t = t.replaceAll('{{method}}', s.endpoint.method);
@@ -51,13 +66,19 @@ class PlaceholderResolver {
 
     t = t
         .replaceAll('{{parameters}}', buildParameters(s))
+        .replaceAll('{{constructorDef}}', buildConstructorDef(s))
         .replaceAll('{{constructor}}', buildConstructor(s))
         .replaceAll('{{props}}', buildProps(s));
-    final fields = s.response.fields.entries.map((e) {
-      return 'final ${e.value}? ${e.key};';
-    }).join('\n  ');
 
-    return t.replaceAll('{{fields}}', fields);
+    // Dynamic Entity & Model Recursive Parser using JsonComplexParser
+    final jsonParser = JsonComplexParser(s.response.entity, s.response.data);
+    final entityClassesCode = jsonParser.generateEntities();
+    final modelClassesCode = jsonParser.generateModels();
+
+    t = t.replaceAll('{{entityClasses}}', entityClassesCode);
+    t = t.replaceAll('{{modelClasses}}', modelClassesCode);
+
+    return t;
   }
 
   String fileName(String tpl, FeatureSchema s) {
@@ -83,6 +104,13 @@ class PlaceholderResolver {
 
   String buildConstructor(FeatureSchema s) =>
       _allParams(s).map((e) => 'required this.${e.key},').join('\n    ');
+
+  String buildConstructorDef(FeatureSchema s) {
+    if (_allParams(s).isEmpty) {
+      return 'const ${_pascal(s.feature)}Parameters();';
+    }
+    return 'const ${_pascal(s.feature)}Parameters({\n    ${buildConstructor(s)}\n  });';
+  }
 
   String buildProps(FeatureSchema s) =>
       _allParams(s).map((e) => e.key).join(', ');

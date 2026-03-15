@@ -19,9 +19,7 @@ class {{Feature}}UseCase
 class {{Feature}}Parameters extends Equatable {
   {{parameters}}
 
-  const {{Feature}}Parameters({
-    {{constructor}}
-  });
+  {{constructorDef}}
 
   @override
   List<Object?> get props => [{{props}}];

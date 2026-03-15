@@ -43,14 +43,14 @@ class EndpointSchema {
 
 class ResponseSchema {
   final String entity;
-  final Map<String, String> fields;
+  final Map<String, dynamic> data;
 
-  ResponseSchema({required this.entity, required this.fields});
+  ResponseSchema({required this.entity, required this.data});
 
   factory ResponseSchema.fromJson(Map<String, dynamic> json) {
     return ResponseSchema(
-      entity: json['entity'],
-      fields: Map<String, String>.from(json['fields']),
+      entity: json['entity'] ?? 'APIResponseEntity',
+      data: json['data'] ?? json['fields'] ?? json['api_response'] ?? {},
     );
   }
 }

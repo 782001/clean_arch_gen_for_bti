@@ -1,7 +1,1 @@
-class {{entity}} {
-  {{fields}}
-
-  {{entity}}({
-    {{#constructor}}
-  });
-}
+{{entityClasses}}

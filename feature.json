@@ -46,7 +46,6 @@
   },
 
   "request": {
-    "path_params": {},
     "query": {
       "productId":"String"
     },

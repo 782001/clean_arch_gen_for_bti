@@ -42,7 +42,6 @@ dart run clean_arch_gen.dart generate feature.json
     "method": "post" //post or get or any other method
   },
   "request": {
-    "path_params": {}, //path parameters
     "query": {
       "email": "String",//pass  parameter name and type
       "password": "String"//query parameters for passing data to the endpoint
@@ -96,7 +95,6 @@ dart run clean_arch_gen.dart generate feature.json
     "method": "post" //post or get or any other method
   },
   "request": {
-    "path_params": {}, //path parameters
     "query": {
       "email": "String",//pass  parameter name and type
       "password": "String"//query parameters for passing data to the endpoint

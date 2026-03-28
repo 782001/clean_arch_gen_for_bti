@@ -64,12 +64,12 @@ class FeatureGenerator {
 
   void _generateOrUpdateFeatureDi(String module) {
     final diFileName = resolver.fileName('injection_container.tpl', schema);
-    final diPath = writer.getFinalPath('${schema.layerPath}/di/$diFileName');
+    final diPath = writer.getFinalPath('${schema.layerPath}/service_injection/$diFileName');
     final file = File(diPath);
 
     if (!file.existsSync()) {
       File(diPath).parent.createSync(recursive: true);
-      _gen('injection_container.tpl', 'di');
+      _gen('injection_container.tpl', 'service_injection');
     } else {
       _mergeIntoFeatureDi(file, module);
     }
@@ -201,7 +201,7 @@ class FeatureGenerator {
         p.relative(writer.getFinalPath(t), from: diDir).replaceAll('\\', '/');
 
       final targetDiFileName = resolver.fileName('injection_container.tpl', schema);
-      final imp = "import '${rel('${schema.layerPath}/di/$targetDiFileName')}';";
+      final imp = "import '${rel('${schema.layerPath}/service_injection/$targetDiFileName')}';";
 
       if (!content.contains(imp)) {
         final lastImport = RegExp(r'^import\s+.*$', multiLine: true)

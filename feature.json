@@ -1,21 +1,17 @@
 {
  "base_path": "F:\\myApps\\standred_repo\\lib\\features",
- "feature": "getProduct",
- "layer_path": "product",
+ "feature": "getCategories",
+ "layer_path": "category",
   "response": {
-    "entity": "GetProductResponseEntity",
+    "entity": "GetCategoriesResponseEntity",
     "data": {
       "success": true,
       "message": "Related products fetched successfully",
       "data": {
-          "products": [
+          "category": [
               {
                   "id": "696202fa0ed9071f091f61ba",
-                  "category": {
-                      "id": "696202190ed9071f091f61b7",
-                      "name": "Medical Equipment",
-                      "slug": "medical-equipment"
-                  },
+                
                   "name": "Digital Blood Pressure Monitor",
                   "slug": "digital-blood-pressure-monitor",
                   "images": [
@@ -41,13 +37,13 @@
   },
 
   "endpoint": {
-    "url": "getProductEndpoint",
+    "url": "getCategoriesEndpoint",
     "method": "get"
   },
 
   "request": {
     "query": {
-      "productId":"String"
+      
     },
     "body": {}
   },

@@ -44,13 +44,9 @@ class FeatureGenerator {
     }
 
     if (schema.presentation.injectionContainer) {
+      _generateOrUpdateFeatureDi(module);
       if (schema.presentation.injectionContainerPath != null) {
-        _injectIntoExistingDi(module);
-      } else {
-        _gen(
-          'injection_container.tpl',
-          'presentation/controller/${module}_cubit',
-        );
+        _updateMainInjectionContainer(module);
       }
     }
   }
@@ -66,92 +62,85 @@ class FeatureGenerator {
     );
   }
 
-  void _injectIntoExistingDi(String module) {
-    final diPath = schema.presentation.injectionContainerPath!;
+  void _generateOrUpdateFeatureDi(String module) {
+    final diFileName = resolver.fileName('injection_container.tpl', schema);
+    final diPath = writer.getFinalPath('${schema.layerPath}/di/$diFileName');
     final file = File(diPath);
-    if (!file.existsSync()) return;
 
+    if (!file.existsSync()) {
+      File(diPath).parent.createSync(recursive: true);
+      _gen('injection_container.tpl', 'di');
+    } else {
+      _mergeIntoFeatureDi(file, module);
+    }
+  }
+
+  void _mergeIntoFeatureDi(File file, String module) {
     var content = file.readAsStringSync();
     final fPascal = resolver.resolveContent('{{Feature}}', schema);
     final mPascal = resolver.pascalFromPath(schema.layerPath);
 
-    final moduleBlockRegex = RegExp('//\\s*$mPascal', caseSensitive: false);
-    if (!content.contains(moduleBlockRegex)) {
-      final generatedDiSnippet =
-          resolver.resolve('injection_container.tpl', schema);
-      final featuresRegex = RegExp(r'//!\s*Features?', caseSensitive: false);
-      final featuresMatch = featuresRegex.firstMatch(content);
+    print('🧬 Merging dependencies into existing ${mPascal}DI.');
 
-      if (featuresMatch != null) {
+    void injectUnderHeading(String heading, String snippetKey) {
+      String searchKey = '';
+      if (snippetKey == 'diUseCase') searchKey = '<${fPascal}UseCase>';
+      if (snippetKey == 'diRepo') searchKey = '<${fPascal}BaseRepository>';
+      if (snippetKey == 'diDS') {
+        searchKey = '<${fPascal}BaseRemoteDataSource>';
+      }
+
+      if (content.contains(searchKey)) return;
+
+      final headingRegex = RegExp(heading, caseSensitive: false);
+      final headMatches = headingRegex.allMatches(content);
+
+      if (headMatches.isNotEmpty) {
+        final headingMatch = headMatches.first;
+        final snippet = resolver.resolveSnippet(snippetKey, schema);
         content = content.replaceRange(
-            featuresMatch.end, featuresMatch.end, '\n\n$generatedDiSnippet');
-      } else {
-        content = '$content\n\n$generatedDiSnippet';
+            headingMatch.end, headingMatch.end, '\n$snippet');
       }
-    } else {
-      print('🧬 Merging dependencies into existing $mPascal block in DI.');
-
-      // Update Cubit Registration
-      final cubitRegRegex = RegExp(
-        'sl\\.registerFactory<${mPascal}Cubit>\\s*\\(\\s*\\(\\s*\\)\\s*=>\\s*${mPascal}Cubit\\s*\\(',
-        multiLine: true,
-      );
-      final cubitMatch = cubitRegRegex.firstMatch(content);
-      if (cubitMatch != null && !content.contains('k${fPascal}UseCase: sl()')) {
-        print(
-            '🔄 Inserting k${fPascal}UseCase into existing ${mPascal}Cubit DI.');
-        content = content.replaceRange(
-            cubitMatch.end, cubitMatch.end, '\n    k${fPascal}UseCase: sl(),');
-      }
-
-      void injectUnderHeading(String heading, String snippetKey) {
-        final fPascal = resolver.resolveContent('{{Feature}}', schema);
-        String searchKey = '';
-        if (snippetKey == 'diUseCase') searchKey = '<${fPascal}UseCase>';
-        if (snippetKey == 'diRepo') searchKey = '<${fPascal}BaseRepository>';
-        if (snippetKey == 'diDS') {
-          searchKey = '<${fPascal}BaseRemoteDataSource>';
-        }
-
-        if (content.contains(searchKey)) return;
-
-        // Find the module block start
-        final startIdx = content.indexOf(moduleBlockRegex);
-        // Find the next module block or end of dependencies to limit search
-        final nextBlockRegex = RegExp(r'^//\s*\w+', multiLine: true);
-        final matches =
-            nextBlockRegex.allMatches(content).where((m) => m.start > startIdx);
-        final limit = matches.isEmpty ? content.length : matches.first.start;
-
-        final headingRegex = RegExp(heading, caseSensitive: false);
-        final headMatches = headingRegex
-            .allMatches(content)
-            .where((m) => m.start > startIdx && m.start < limit);
-
-        if (headMatches.isNotEmpty) {
-          final headingMatch = headMatches.first;
-          final snippet = resolver.resolveSnippet(snippetKey, schema);
-          content = content.replaceRange(
-              headingMatch.end, headingMatch.end, '\n$snippet');
-        }
-      }
-
-      injectUnderHeading('///\\s*--------useCases----------', 'diUseCase');
-      injectUnderHeading('///\\s*--------Repository--------', 'diRepo');
-      injectUnderHeading('///\\s*--------DataSource--------', 'diDS');
     }
 
-    final diDir = p.dirname(diPath);
-    String rel(String t) =>
-        p.relative(writer.getFinalPath(t), from: diDir).replaceAll('\\', '/');
+    injectUnderHeading(r'/// --------DataSource--------', 'diDS');
+    injectUnderHeading(r'/// --------Repository--------', 'diRepo');
+    injectUnderHeading(r'/// --------useCases----------', 'diUseCase');
+
+    // Update Cubit Registration
+    final cubitRegRegex = RegExp(
+      'sl\\.registerFactory<${mPascal}Cubit>\\s*\\([\\s\\S]*?=>\\s*${mPascal}Cubit\\s*\\(',
+      multiLine: true,
+    );
+    final cubitMatch = cubitRegRegex.firstMatch(content);
+    if (cubitMatch != null && !content.contains('k${fPascal}UseCase: sl()')) {
+      print('🔄 Inserting k${fPascal}UseCase into existing ${mPascal}Cubit DI.');
+      content = content.replaceRange(
+          cubitMatch.end, cubitMatch.end, '\n        k${fPascal}UseCase: sl(),');
+    } else if (cubitMatch == null && !content.contains('<${mPascal}Cubit>')) {
+      final headingRegex =
+          RegExp('///\\s*-----${mPascal}Cubit------', caseSensitive: false);
+      final headMatches = headingRegex.allMatches(content);
+      if (headMatches.isNotEmpty) {
+        final headingMatch = headMatches.first;
+        final snippet = '''
+    sl.registerFactory<${mPascal}Cubit>(
+      () => ${mPascal}Cubit(
+        k${fPascal}UseCase: sl(),
+      ),
+    );''';
+        content = content.replaceRange(
+            headingMatch.end, headingMatch.end, '\n$snippet');
+      }
+    }
 
     final cubitFile = resolver.fileName('cubit.tpl', schema);
     final newImports = [
-      "import '${rel('${schema.layerPath}/presentation/controller/${module}_cubit/$cubitFile')}';",
-      "import '${rel('${schema.layerPath}/domain/usecases/${resolver.fileName('usecase.tpl', schema)}')}';",
-      "import '${rel('${schema.layerPath}/domain/repositories/${resolver.fileName('repo_base.tpl', schema)}')}';",
-      "import '${rel('${schema.layerPath}/data/repositories/${resolver.fileName('repo_impl.tpl', schema)}')}';",
-      "import '${rel('${schema.layerPath}/data/data_sources/${resolver.fileName('remote_ds.tpl', schema)}')}';",
+      "import '../presentation/controller/${module}_cubit/$cubitFile';",
+      "import '../domain/usecases/${resolver.fileName('usecase.tpl', schema)}';",
+      "import '../domain/repositories/${resolver.fileName('repo_base.tpl', schema)}';",
+      "import '../data/repositories/${resolver.fileName('repo_impl.tpl', schema)}';",
+      "import '../data/data_sources/${resolver.fileName('remote_ds.tpl', schema)}';",
     ];
 
     for (var imp in newImports) {
@@ -171,9 +160,66 @@ class FeatureGenerator {
       content =
           DartFormatter(languageVersion: DartFormatter.latestLanguageVersion)
               .format(content);
-    } catch (e) {}
+    } catch (e) {
+      print('⚠️ Formatting DI failed: $e');
+    }
 
     file.writeAsStringSync(content);
+  }
+
+  void _updateMainInjectionContainer(String module) {
+    final mainDiPath = schema.presentation.injectionContainerPath!;
+    final file = File(mainDiPath);
+    if (!file.existsSync()) return;
+
+    var content = file.readAsStringSync();
+    final mPascal = resolver.pascalFromPath(schema.layerPath);
+    
+    // Ensure the method is Future<void> initDependencies() async
+    if (content.contains('void initDependencies() {')) {
+      content = content.replaceAll('void initDependencies() {', 'Future<void> initDependencies() async {');
+    }
+
+    final initCall = 'await ${mPascal}DI.init();';
+    if (!content.contains(initCall)) {
+      final featuresBlock = RegExp(r'//!\s*Features.*$', multiLine: true);
+      final match = featuresBlock.firstMatch(content);
+      if (match != null) {
+        content = content.replaceRange(match.end, match.end, '\n  $initCall');
+      } else {
+        // Just append before the closing brace if '//! Features' is missing
+        final lastBrace = content.lastIndexOf('}');
+        if (lastBrace != -1) {
+          content = content.replaceRange(lastBrace, lastBrace, '  $initCall\n');
+        }
+      }
+
+      // Add appropriate import
+      // Using relative path based on actual location. Assume it's located below the common lib dir
+      final diDir = p.dirname(file.path);
+      String rel(String t) =>
+        p.relative(writer.getFinalPath(t), from: diDir).replaceAll('\\', '/');
+
+      final targetDiFileName = resolver.fileName('injection_container.tpl', schema);
+      final imp = "import '${rel('${schema.layerPath}/di/$targetDiFileName')}';";
+
+      if (!content.contains(imp)) {
+        final lastImport = RegExp(r'^import\s+.*$', multiLine: true)
+            .allMatches(content)
+            .lastOrNull;
+        if (lastImport != null) {
+          content = content.replaceRange(lastImport.end, lastImport.end, '\n$imp');
+        } else {
+          content = '$imp\n$content';
+        }
+      }
+
+      try {
+        content = DartFormatter(languageVersion: DartFormatter.latestLanguageVersion).format(content);
+      } catch (e) {}
+
+      file.writeAsStringSync(content);
+    }
   }
 
   void _mergeIntoStates(String statesPath) {
@@ -231,11 +277,13 @@ class FeatureGenerator {
     }
 
     final param = resolver.resolveSnippet('cubitConstructorParam', schema);
-    final constructorBodyRegex = RegExp(r'required\s+this\.k\w+UseCase,');
+    final constructorBodyRegex = RegExp(r'required\s+this\.k\w+UseCase,?');
     final lastParamMatch = constructorBodyRegex.allMatches(content).lastOrNull;
     if (lastParamMatch != null) {
+      final matchText = lastParamMatch.group(0)!;
+      final suffix = matchText.endsWith(',') ? '' : ',';
       content = content.replaceRange(
-          lastParamMatch.end, lastParamMatch.end, '\n$param');
+          lastParamMatch.end, lastParamMatch.end, '$suffix\n$param');
     }
 
     final method = resolver.resolveSnippet('cubitMethod', schema);

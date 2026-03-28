@@ -6,7 +6,10 @@ class JsonComplexParser {
 
   final Map<String, ClassInfo> _entityClasses = {};
 
-  JsonComplexParser(this._rootEntityName, this._json) {
+  final String _prefix;
+
+  JsonComplexParser(this._rootEntityName, this._json)
+      : _prefix = _rootEntityName.replaceAll('ResponseEntity', '') {
     _parse(_rootEntityName, _json);
   }
 
@@ -36,7 +39,7 @@ class JsonComplexParser {
     if (value is bool) return FieldInfo(key, 'bool', false, true);
 
     if (value is Map<String, dynamic>) {
-      final baseName = _pascalCase(key);
+      final baseName = _prefix + _pascalCase(key);
       final entityName = '${baseName}Entity';
       _parse(entityName, value);
       return FieldInfo(key, entityName, false, false, baseName);
@@ -48,7 +51,7 @@ class JsonComplexParser {
       }
       final first = value.first;
       if (first is Map<String, dynamic>) {
-        final baseName = _pascalCase(key) + 'Item';
+        final baseName = _prefix + _pascalCase(key) + 'Item';
         final entityName = '${baseName}Entity';
         _parse(entityName, first);
         return FieldInfo(key, entityName, true, false, baseName);

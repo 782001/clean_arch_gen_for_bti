@@ -3,15 +3,15 @@ import '../../schema/feature_schema.dart';
 import 'json_complex_parser.dart';
 
 class PlaceholderResolver {
-  String _pascal(String v) =>
-      v.split(RegExp(r'[_|\-| ]')).map((e) {
+  String _pascal(String v) => v.split(RegExp(r'[_|\-| ]')).map((e) {
         if (e.isEmpty) return '';
         return e[0].toUpperCase() + e.substring(1);
       }).join();
 
   String _snake(String v) {
     return v
-        .replaceAllMapped(RegExp(r'([a-z0-9])([A-Z])'), (Match m) => '${m[1]}_${m[2]}')
+        .replaceAllMapped(
+            RegExp(r'([a-z0-9])([A-Z])'), (Match m) => '${m[1]}_${m[2]}')
         .replaceAll(RegExp(r'\s+|-'), '_')
         .toLowerCase();
   }
@@ -44,8 +44,14 @@ class PlaceholderResolver {
     return '      queryParameters: {\n        ${buildQueryParameters(s)}\n      },';
   }
 
-  String buildCubitParameters(FeatureSchema s) =>
-      _allParams(s).map((e) => 'required ${e.value} ${e.key},').join('\n    ');
+  String buildCubitParameters(FeatureSchema s) {
+    if (_allParams(s).isEmpty) return '';
+    return '{\n    ' +
+        _allParams(s)
+            .map((e) => 'required ${e.value} ${e.key},')
+            .join('\n    ') +
+        '\n  }';
+  }
 
   String buildUsecaseParams(FeatureSchema s) =>
       _allParams(s).map((e) => '${e.key}: ${e.key},').join('\n        ');
@@ -105,7 +111,7 @@ class PlaceholderResolver {
       return '${_snake(module)}_${tpl.replaceAll('.tpl', '')}.dart';
     }
     if (tpl == 'injection_container.tpl') {
-      return '${tpl.replaceAll('.tpl', '')}.dart';
+      return '${_snake(module)}_injection.dart';
     }
 
     return '${_snake(s.feature)}_${tpl.replaceAll('.tpl', '')}.dart';
@@ -155,9 +161,7 @@ class PlaceholderResolver {
         final entityCamel = _camel(entity);
         return '''
   $entity? $entityCamel;
-  void ${featureCamel}Method({
-    ${buildCubitParameters(s)}
-  }) async {
+  void ${featureCamel}Method(${buildCubitParameters(s)}) async {
     emit(${featurePascal}LoadingState());
 
     final response = await k${featurePascal}UseCase(
@@ -179,19 +183,19 @@ class PlaceholderResolver {
     );
   }''';
       case 'diCubitParam':
-        return '    k${featurePascal}UseCase: sl(),';
+        return '        k${featurePascal}UseCase: sl(),';
       case 'diUseCase':
-        return '''sl.registerLazySingleton<${featurePascal}UseCase>(
-  () => ${featurePascal}UseCase(baseRepository: sl()),
-);''';
+        return '''    sl.registerLazySingleton<${featurePascal}UseCase>(
+      () => ${featurePascal}UseCase(baseRepository: sl()),
+    );''';
       case 'diRepo':
-        return '''sl.registerLazySingleton<${featurePascal}BaseRepository>(
-  () => ${featurePascal}Repository(sl()),
-);''';
+        return '''    sl.registerLazySingleton<${featurePascal}BaseRepository>(
+      () => ${featurePascal}Repository(sl()),
+    );''';
       case 'diDS':
-        return '''sl.registerLazySingleton<${featurePascal}BaseRemoteDataSource>(
-  () => ${featurePascal}RemoteDataSource(sl<DioClient>()),
-);''';
+        return '''    sl.registerLazySingleton<${featurePascal}BaseRemoteDataSource>(
+      () => ${featurePascal}RemoteDataSource(sl<DioClient>()),
+    );''';
       case 'cubitStates':
         return '''
 class ${featurePascal}LoadingState extends ${modulePascal}State {}
